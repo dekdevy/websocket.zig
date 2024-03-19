@@ -37,7 +37,7 @@ pub fn listen(comptime H: type, allocator: Allocator, context: anytype, config: 
 	var server = try Server.init(allocator, config);
 	defer server.deinit(allocator);
 
-	var listener = net.StreamServer.init(.{
+	var listener = net.Address.listen(config.address, .{
 		.reuse_address = true,
 		.kernel_backlog = 1024,
 	});
