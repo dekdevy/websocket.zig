@@ -37,11 +37,7 @@ pub fn listen(comptime H: type, allocator: Allocator, context: anytype, config: 
 	var server = try Server.init(allocator, config);
 	defer server.deinit(allocator);
 
-	var listener = net.Address.listen(config.address, .{
-		.reuse_address = true,
-		.kernel_backlog = 1024,
-	});
-	defer listener.deinit();
+
 
 	var no_delay = true;
 	const address = blk: {
@@ -54,6 +50,13 @@ pub fn listen(comptime H: type, allocator: Allocator, context: anytype, config: 
 		}
 		break :blk try net.Address.parseIp(config.address, config.port);
 	};
+
+	var listener = net.Address.listen(address, .{
+		.reuse_address = true,
+		.kernel_backlog = 1024,
+	});
+	defer listener.deinit();
+
 	try listener.listen(address);
 
 	if (no_delay) {
